@@ -13,6 +13,14 @@ public class CharaterStats : MonoBehaviour
 
     public AttackData_SO attackData;
 
+    private AttackData_SO baseAttackData;
+
+    private RuntimeAnimatorController baseAnimator;
+
+    [Header("Weapon")]
+
+    public Transform weaponSlot;
+
     [HideInInspector]
     public bool isCritical;
     #region Poverty read from data_so
@@ -80,5 +88,50 @@ public class CharaterStats : MonoBehaviour
     {
         if (templateData != null)
             characterData = Instantiate(templateData);
+        baseAttackData = Instantiate(attackData);
+        baseAnimator = GetComponent<Animator>().runtimeAnimatorController;
     }
+
+    #region Equip Weapon
+
+    public void ChangeWeapon(ItemData_SO weapon)
+    {
+        UnEuipWeapon();
+        EquipWeapon(weapon);
+    }
+    public void EquipWeapon(ItemData_SO weapon)
+    {
+       if(weapon.weaponPrefab!=null)
+        {
+            Instantiate(weapon.weaponPrefab, weaponSlot);
+        }
+        //TODO:更新属性
+        attackData.ApplyWeaponData(weapon.weaponAttackData);
+        GetComponent<Animator>().runtimeAnimatorController = weapon.weaponAnimator;
+        //InventoryManager.Instance.UpdateStatsText(MaxHealth, attackData.minDamage, attackData.maxDamage);
+    }
+
+    public void UnEuipWeapon()
+    {
+        if(weaponSlot.transform.childCount!=0)
+        {
+            for(int i=0;i<weaponSlot.transform.childCount;++i)
+            {
+                Destroy(weaponSlot.transform.GetChild(i).gameObject);
+            }
+        }
+        attackData.ApplyWeaponData(baseAttackData);
+        GetComponent<Animator>().runtimeAnimatorController = baseAnimator;
+    }
+    #endregion
+
+# region Apply Data Change
+    public void ApplyHealth(int amout)
+    {
+        if (CurrentHealth + amout <= MaxHealth)
+            CurrentHealth += amout;
+        else
+            CurrentHealth = MaxHealth;
+    }
+#endregion 
 }

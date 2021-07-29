@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using System;
     
 public class MouseManager : SingleTon<MouseManager>
@@ -38,12 +38,17 @@ public class MouseManager : SingleTon<MouseManager>
     void Update()
     {
         setCursorTexture();
+        if ((InteractWithUI())) return;
         mouseControl();
     }
     void setCursorTexture()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        
+        if(InteractWithUI())
+        {
+            Cursor.SetCursor(point,Vector2.zero, CursorMode.Auto);
+            return;
+        }
         if(Physics.Raycast(ray,out mouseHitInfo))
         {
             //switch mouse cursor
@@ -73,6 +78,15 @@ public class MouseManager : SingleTon<MouseManager>
                         {
                             Cursor.SetCursor(portal, new Vector2(16, 16), CursorMode.Auto);
                             currentCursor = cursorType.portal;
+                        }
+                        break;
+                    }
+                case "Item":
+                    {
+                        if (currentCursor != cursorType.point)
+                        {
+                            Cursor.SetCursor(point, new Vector2(16, 16), CursorMode.Auto);
+                            currentCursor = cursorType.point;
                         }
                         break;
                     }
@@ -112,8 +126,19 @@ public class MouseManager : SingleTon<MouseManager>
                 //Debug.Log("click enemy");
                 OnMouseClicked?.Invoke(mouseHitInfo.point);
             }
+            if (mouseHitInfo.collider.CompareTag("Item"))
+            {
+               
+                OnMouseClicked?.Invoke(mouseHitInfo.point);
+            }
 
         }
 
+    }
+    bool InteractWithUI()
+    {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            return true;
+        return false;
     }
 }

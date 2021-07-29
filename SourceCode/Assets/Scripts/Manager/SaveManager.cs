@@ -34,6 +34,7 @@ public class SaveManager : SingleTon<SaveManager>
     public void savePlayerData()
     {
         Save(GameManager.Instance.playerStats.characterData, GameManager.Instance.playerStats.characterData.name);
+     
     }
     public void loarPlayerData()
     {

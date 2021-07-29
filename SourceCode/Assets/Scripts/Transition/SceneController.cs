@@ -45,6 +45,9 @@ public class SceneController : SingleTon<SceneController>, IEndGameObserver
         SceneFader fade = Instantiate(sceneFaderPrefab);
         yield return StartCoroutine(fade.FadeOut(1f));
         SaveManager.Instance.savePlayerData();
+        InventoryManager.Instance.SaveData();
+        QuestManager.Instance.SaveQuestManager();
+
         if (SceneManager.GetActiveScene().name != sceneName)
         {
             yield return SceneManager.LoadSceneAsync(sceneName);
@@ -80,6 +83,7 @@ public class SceneController : SingleTon<SceneController>, IEndGameObserver
                 ,GameManager.Instance.getEntrance().rotation);
 
             SaveManager.Instance.savePlayerData();
+            InventoryManager.Instance.SaveData();
             yield return StartCoroutine(fade.FadeIn(1f));
             yield break;
         }

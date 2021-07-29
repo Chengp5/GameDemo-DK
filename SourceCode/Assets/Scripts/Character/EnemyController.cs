@@ -71,6 +71,12 @@ public class EnemyController : MonoBehaviour ,IEndGameObserver
     {
         if (!GameManager.IsIniatialed) return;
             GameManager.Instance.removerObserver(this);
+        if(GetComponent<LootSpawner>()&&isDead)
+        {
+            GetComponent<LootSpawner>().Spawnloot(); 
+        }
+        if (QuestManager.IsIniatialed && isDead)
+            QuestManager.Instance.updateProgress(this.name, 1);
     }
     private void Awake()
     {
